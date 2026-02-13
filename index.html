@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Dívidas</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: #e5e7eb;
+    padding: 20px;
+    line-height: 1.6;
+  }
+
+  h1, h2 {
+    text-align: center;
+    color: #60a5fa;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: auto;
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  .form-section {
+    background: #334155;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  label {
+    margin-bottom: 5px;
+    color: #cbd5e1;
+    font-size: 14px;
+  }
+
+  input {
+    padding: 10px;
+    border: 1px solid #475569;
+    border-radius: 5px;
+    background: #1e293b;
+    color: #e5e7eb;
+    font-size: 14px;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: #60a5fa;
+  }
+
+  button {
+    padding: 12px 25px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+    font-size: 16px;
+  }
+
+  button:hover {
+    background: #2563eb;
+  }
+
+  .btn-adicionar {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .resumo {
+    background: #334155;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .resumo-valor {
+    font-size: 24px;
+    color: #10b981;
+    font-weight: bold;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: #334155;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  th {
+    background: #475569;
+    padding: 15px;
+    text-align: left;
+    color: #e5e7eb;
+    font-weight: bold;
+  }
+
+  td {
+    padding: 15px;
+    border-bottom: 1px solid #475569;
+  }
+
+  tr:hover {
+    background: #475569;
+  }
+
+  .status-pendente {
+    color: #fbbf24;
+    font-weight: bold;
+  }
+
+  .status-pago {
+    color: #10b981;
+    font-weight: bold;
+  }
+
+  .acoes {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-acao {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+
+  .btn-pagar {
+    background: #10b981;
+  }
+
+  .btn-pagar:hover {
+    background: #059669;
+  }
+
+  .btn-editar {
+    background: #f59e0b;
+  }
+
+  .btn-editar:hover {
+    background: #d97706;
+  }
+
+  .btn-excluir {
+    background: #ef4444;
+  }
+
+  .btn-excluir:hover {
+    background: #dc2626;
+  }
+
+  .backup-section {
+    background: #334155;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 30px;
+    text-align: center;
+  }
+
+  .backup-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 15px;
+    flex-wrap: wrap;
+  }
+
+  #importFile {
+    display: none;
+  }
+
+  .import-btn {
+    background: #8b5cf6;
+  }
+
+  .import-btn:hover {
+    background: #7c3aed;
+  }
+
+  .export-btn {
+    background: #3b82f6;
+  }
+
+  .export-btn:hover {
+    background: #2563eb;
+  }
+
+  .total-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding: 15px;
+    background: #475569;
+    border-radius: 8px;
+  }
+
+  .total-label {
+    font-size: 18px;
+  }
+
+  .total-value {
+    font-size: 28px;
+    color: #10b981;
+    font-weight: bold;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .modal-overlay.aberto {
+    display: flex;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .modal {
+    background: #1e293b;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    max-width: 560px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.25s ease;
+    border: 1px solid #475569;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #475569;
+    background: #334155;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    text-align: left;
+  }
+
+  .modal-close {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px 8px;
+    line-height: 1;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .modal-close:hover {
+    color: #e5e7eb;
+    background: #475569;
+  }
+
+  .modal-body {
+    padding: 24px;
+  }
+
+  .modal .form-section {
+    margin-bottom: 0;
+    background: transparent;
+    padding: 0;
+  }
+
+  .modal .form-grid {
+    margin-bottom: 16px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .acoes {
+      flex-direction: column;
+    }
+    
+    .backup-buttons {
+      flex-direction: column;
+    }
+    
+    .total-section {
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+    }
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h1>📋 Registro de Dívidas</h1>
+  
+  <div style="margin-bottom: 30px;">
+    <button class="btn-adicionar" onclick="abrirModalNovaDivida()">➕ Nova Dívida</button>
+  </div>
+
+  <!-- Modal do formulário -->
+  <div id="modalDivida" class="modal-overlay" onclick="fecharModalSeClicarFora(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 id="modalTitulo">➕ Nova Dívida</h2>
+        <button type="button" class="modal-close" onclick="fecharModalDivida()" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-section">
+          <div class="form-grid">
+            <div class="input-group">
+              <label for="nomeDivida">Nome da Dívida</label>
+              <input type="text" id="nomeDivida" placeholder="Ex: Empréstimo Banco X">
+            </div>
+            
+            <div class="input-group">
+              <label for="valorObtido">Valor Obtido (R$)</label>
+              <input type="number" step="0.01" id="valorObtido" placeholder="0.00">
+            </div>
+            
+            <div class="input-group">
+              <label for="quantidadeParcelas">Quantidade de Parcelas</label>
+              <input type="number" id="quantidadeParcelas" placeholder="0">
+            </div>
+            
+            <div class="input-group">
+              <label for="valorMensal">Valor Mensal (R$)</label>
+              <input type="number" step="0.01" id="valorMensal" placeholder="0.00">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="valorTotal">Valor Total (R$)</label>
+            <input type="number" step="0.01" id="valorTotal" placeholder="0.00">
+          </div>
+          
+          <div class="input-group">
+            <label for="observacao">Observação (opcional)</label>
+            <input type="text" id="observacao" placeholder="Detalhes, data do empréstimo, etc...">
+          </div>
+          <input type="hidden" id="editingId" value="">
+          <div style="display:flex; gap:10px; margin-top:16px; flex-wrap: wrap;">
+            <button id="btnAdicionar" class="btn-adicionar" onclick="adicionarDivida()">➕ Adicionar Dívida</button>
+            <button id="btnCancelarEdicao" class="btn-adicionar" style="background:#6b7280; display:none;" onclick="fecharModalDivida()">✖ Cancelar Edição</button>
+            <button type="button" class="btn-adicionar" style="background:#64748b;" onclick="fecharModalDivida()">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="resumo">
+    <div class="total-section">
+      <div class="total-label">Total de Dívidas:</div>
+      <div class="total-value" id="totalDividas">R$ 0,00</div>
+    </div>
+    <div class="total-section">
+      <div class="total-label">Dívidas Pendentes:</div>
+      <div class="total-value" id="totalPendentes">R$ 0,00</div>
+    </div>
+    <div class="total-section">
+      <div class="total-label">Dívidas Pagas:</div>
+      <div class="total-value" id="totalPagas">R$ 0,00</div>
+    </div>
+  </div>
+
+  <h2>📊 Dívidas Registradas</h2>
+  <div style="display:flex; gap:12px; align-items:center; margin-top:10px; margin-bottom:10px; flex-wrap:wrap;">
+    <label style="font-size:14px; color:#cbd5e1;">Filtrar:</label>
+    <select id="filtroStatus" style="padding:8px; border-radius:6px; background:#1e293b; color:#e5e7eb; border:1px solid #475569;">
+      <option value="all">Todas</option>
+      <option value="pendente">Pendentes</option>
+      <option value="pago">Pagas</option>
+    </select>
+
+    <label style="font-size:14px; color:#cbd5e1;">Ordenar por:</label>
+    <select id="ordenarPor" style="padding:8px; border-radius:6px; background:#1e293b; color:#e5e7eb; border:1px solid #475569;">
+      <option value="data_desc">Data (mais recentes)</option>
+      <option value="data_asc">Data (mais antigas)</option>
+      <option value="valor_desc">Valor (maior → menor)</option>
+      <option value="valor_asc">Valor (menor → maior)</option>
+      <option value="nome_asc">Nome (A → Z)</option>
+      <option value="nome_desc">Nome (Z → A)</option>
+      <option value="status_asc">Status (Pendente → Pago)</option>
+      <option value="status_desc">Status (Pago → Pendente)</option>
+    </select>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Valor Obtido</th>
+        <th>Parcelas</th>
+        <th>Valor Mensal</th>
+        <th>Valor Total</th>
+        <th>Status</th>
+        <th>Observação</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="listaDividas"></tbody>
+  </table>
+
+  <div class="backup-section">
+    <h2>💾 Backup dos Dados</h2>
+    <p>Exporte ou importe seu registro de dívidas</p>
+    <div class="backup-buttons">
+      <button class="export-btn" onclick="exportarDados()">📥 Exportar Dados</button>
+      <button class="import-btn" onclick="document.getElementById('importFile').click()">📤 Importar Dados</button>
+      <input type="file" id="importFile" onchange="importarDados(event)" accept=".json">
+    </div>
+  </div>
+</div>
+
+<script>
+// Carregar dívidas do localStorage ou iniciar array vazio
+let dividas = JSON.parse(localStorage.getItem('registroDividas')) || [];
+
+// Função para atualizar totais
+function atualizarTotais() {
+  let totalDividas = 0;
+  let totalPendentes = 0;
+  let totalPagas = 0;
+  
+  dividas.forEach(divida => {
+    const valorTotalDivida = Number(divida.valorTotal) || (Number(divida.valorMensal) * Number(divida.quantidadeParcelas)) || Number(divida.valorObtido) || 0;
+    totalDividas += valorTotalDivida;
+
+    if (divida.status === 'pendente') {
+      totalPendentes += valorTotalDivida;
+    } else {
+      totalPagas += valorTotalDivida;
+    }
+  });
+  
+  document.getElementById('totalDividas').textContent = `R$ ${totalDividas.toFixed(2).replace('.', ',')}`;
+  document.getElementById('totalPendentes').textContent = `R$ ${totalPendentes.toFixed(2).replace('.', ',')}`;
+  document.getElementById('totalPagas').textContent = `R$ ${totalPagas.toFixed(2).replace('.', ',')}`;
+}
+
+// Função para adicionar nova dívida
+function adicionarDivida() {
+  const nome = document.getElementById('nomeDivida').value.trim();
+  const valorObtido = parseFloat(document.getElementById('valorObtido').value);
+  const quantidadeParcelas = parseInt(document.getElementById('quantidadeParcelas').value);
+  const valorMensal = parseFloat(document.getElementById('valorMensal').value);
+  const observacao = document.getElementById('observacao').value.trim();
+  const editingId = document.getElementById('editingId').value;
+
+  // Calcular valor total com segurança (parcelas * valor mensal)
+  const inputValorTotal = document.getElementById('valorTotal');
+  const valorTotalCalc = (Number(valorMensal) || 0) * (Number(quantidadeParcelas) || 0);
+  const valorTotal = Number(inputValorTotal.value) || valorTotalCalc;
+
+  // Validação
+  if (!nome) {
+    alert('Por favor, informe o nome da dívida');
+    return;
+  }
+  
+  if (!valorObtido || valorObtido <= 0) {
+    alert('Por favor, informe um valor total válido');
+    return;
+  }
+  
+  if (!quantidadeParcelas || quantidadeParcelas <= 0) {
+    alert('Por favor, informe uma quantidade de parcelas válida');
+    return;
+  }
+  
+  if (!valorMensal || valorMensal <= 0) {
+    alert('Por favor, informe um valor mensal válido');
+    return;
+  }
+
+  // Se estiver editando, atualiza a dívida existente
+  if (editingId) {
+    const idNum = Number(editingId);
+    const index = dividas.findIndex(d => d.id === idNum);
+    if (index !== -1) {
+      dividas[index].nome = nome;
+      dividas[index].valorObtido = valorObtido;
+      dividas[index].quantidadeParcelas = quantidadeParcelas;
+      dividas[index].valorMensal = valorMensal;
+      dividas[index].valorTotal = valorTotal;
+      dividas[index].observacao = observacao || 'Sem observação';
+      dividas[index].dataAtualizacao = new Date().toISOString();
+
+      salvarDados();
+      atualizarLista();
+      atualizarTotais();
+      limparFormulario();
+      document.getElementById('editingId').value = '';
+      document.getElementById('btnAdicionar').textContent = '➕ Adicionar Dívida';
+      document.getElementById('btnCancelarEdicao').style.display = 'none';
+      fecharModalDivida();
+      alert('Dívida atualizada com sucesso!');
+      return;
+    } else {
+      alert('Não foi possível encontrar a dívida para edição.');
+      document.getElementById('editingId').value = '';
+    }
+  }
+
+  // Criar nova dívida
+  const novaDivida = {
+    id: Date.now(), // ID único baseado no timestamp
+    nome: nome,
+    valorObtido: valorObtido,
+    quantidadeParcelas: quantidadeParcelas,
+    valorMensal: valorMensal,
+    valorTotal: valorTotal,
+    observacao: observacao || 'Sem observação',
+    status: 'pendente', // pendente ou pago
+    dataCriacao: new Date().toISOString()
+  };
+
+  // Adicionar ao array
+  dividas.push(novaDivida);
+  
+  // Salvar no localStorage
+  salvarDados();
+  
+  // Atualizar a interface
+  atualizarLista();
+  atualizarTotais();
+  
+  // Limpar campos do formulário e fechar modal
+  limparFormulario();
+  fecharModalDivida();
+  
+  alert('Dívida registrada com sucesso!');
+}
+
+// Função para atualizar a lista na interface
+function atualizarLista() {
+  const tbody = document.getElementById('listaDividas');
+
+  // Pegar filtros/ordenacao
+  const filtro = document.getElementById('filtroStatus') ? document.getElementById('filtroStatus').value : 'all';
+  const ordenacao = document.getElementById('ordenarPor') ? document.getElementById('ordenarPor').value : 'data_desc';
+
+  // Copia para não alterar o array original
+  let lista = dividas.slice();
+
+  // Aplicar filtro por status
+  if (filtro !== 'all') {
+    lista = lista.filter(d => d.status === filtro);
+  }
+
+  // Função utilitária para obter valor numérico da dívida
+  const obterValor = d => Number(d.valorTotal) || (Number(d.valorMensal) * Number(d.quantidadeParcelas)) || Number(d.valorObtido) || 0;
+
+  // Aplicar ordenação
+  switch (ordenacao) {
+    case 'data_desc':
+      lista.sort((a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao));
+      break;
+    case 'data_asc':
+      lista.sort((a, b) => new Date(a.dataCriacao) - new Date(b.dataCriacao));
+      break;
+    case 'valor_desc':
+      lista.sort((a, b) => obterValor(b) - obterValor(a));
+      break;
+    case 'valor_asc':
+      lista.sort((a, b) => obterValor(a) - obterValor(b));
+      break;
+    case 'nome_asc':
+      lista.sort((a, b) => String(a.nome).localeCompare(String(b.nome)));
+      break;
+    case 'nome_desc':
+      lista.sort((a, b) => String(b.nome).localeCompare(String(a.nome)));
+      break;
+    case 'status_asc':
+      lista.sort((a, b) => (a.status === b.status) ? 0 : (a.status === 'pendente' ? -1 : 1));
+      break;
+    case 'status_desc':
+      lista.sort((a, b) => (a.status === b.status) ? 0 : (a.status === 'pago' ? -1 : 1));
+      break;
+    default:
+      break;
+  }
+
+  if (lista.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" style="text-align: center; padding: 30px;">
+          Nenhuma dívida encontrada com os filtros atuais.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  let html = '';
+  lista.forEach(divida => {
+    const statusClass = divida.status === 'pendente' ? 'status-pendente' : 'status-pago';
+    const statusText = divida.status === 'pendente' ? 'Pendente' : 'Pago';
+    const valorTotalFormatado = `R$ ${Number(divida.valorTotal || (divida.valorMensal * divida.quantidadeParcelas) || 0).toFixed(2).replace('.', ',')}`;
+
+    html += `
+      <tr>
+        <td><strong>${divida.nome}</strong></td>
+        <td>R$ ${Number(divida.valorObtido).toFixed(2).replace('.', ',')}</td>
+        <td>${divida.quantidadeParcelas}x</td>
+        <td>R$ ${Number(divida.valorMensal).toFixed(2).replace('.', ',')}</td>
+        <td>${valorTotalFormatado}</td>
+        <td class="${statusClass}">${statusText}</td>
+        <td>${divida.observacao}</td>
+        <td class="acoes">
+          ${divida.status === 'pendente' 
+            ? `<button class="btn-acao btn-pagar" onclick="marcarComoPago(${divida.id})">✓ Pagar</button>` 
+            : `<button class="btn-acao" style="background: #6b7280;" disabled>Pago</button>`}
+          <button class="btn-acao btn-editar" onclick="editarDivida(${divida.id})">✎ Editar</button>
+          <button class="btn-acao btn-excluir" onclick="excluirDivida(${divida.id})">🗑️ Excluir</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+// Função para marcar dívida como paga
+function marcarComoPago(id) {
+  if (!confirm('Deseja marcar esta dívida como paga?')) return;
+  
+  const index = dividas.findIndex(d => d.id === id);
+  if (index !== -1) {
+    dividas[index].status = 'pago';
+    dividas[index].dataPagamento = new Date().toISOString();
+    salvarDados();
+    atualizarLista();
+    atualizarTotais();
+  }
+}
+
+// Função para excluir dívida
+function excluirDivida(id) {
+  if (!confirm('Tem certeza que deseja excluir esta dívida?')) return;
+  
+  dividas = dividas.filter(d => d.id !== id);
+  salvarDados();
+  atualizarLista();
+  atualizarTotais();
+}
+
+// Função para exportar dados
+function exportarDados() {
+  if (dividas.length === 0) {
+    alert('Não há dados para exportar!');
+    return;
+  }
+  
+  const dados = {
+    dividas: dividas,
+    dataExportacao: new Date().toISOString(),
+    totalDividas: dividas.reduce((sum, d) => {
+      const v = Number(d.valorTotal) || (Number(d.valorMensal) * Number(d.quantidadeParcelas)) || Number(d.valorObtido) || 0;
+      return sum + v;
+    }, 0)
+  };
+  
+  const dadosStr = JSON.stringify(dados, null, 2);
+  const blob = new Blob([dadosStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `registro_dividas_${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Função para importar dados
+function importarDados(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  if (!confirm('Importar dados irá substituir as dívidas atuais. Deseja continuar?')) {
+    event.target.value = '';
+    return;
+  }
+  
+  const reader = new FileReader();
+  
+  reader.onload = function(e) {
+    try {
+      const dados = JSON.parse(e.target.result);
+      
+      if (!dados.dividas || !Array.isArray(dados.dividas)) {
+        throw new Error('Formato de arquivo inválido');
+      }
+      
+      dividas = dados.dividas;
+      salvarDados();
+      atualizarLista();
+      atualizarTotais();
+      
+      alert(`Sucesso! ${dividas.length} dívida(s) importada(s).`);
+    } catch (error) {
+      alert('Erro ao importar arquivo. Verifique se é um arquivo válido.');
+      console.error('Erro na importação:', error);
+    }
+    
+    event.target.value = '';
+  };
+  
+  reader.readAsText(file);
+}
+
+// Função para salvar dados no localStorage
+function salvarDados() {
+  localStorage.setItem('registroDividas', JSON.stringify(dividas));
+}
+
+// Função para limpar formulário
+function limparFormulario() {
+  document.getElementById('nomeDivida').value = '';
+  document.getElementById('valorObtido').value = '';
+  document.getElementById('quantidadeParcelas').value = '';
+  document.getElementById('valorMensal').value = '';
+  document.getElementById('observacao').value = '';
+  document.getElementById('valorTotal').value = '';
+}
+
+// Função para abrir modal (nova dívida)
+function abrirModalNovaDivida() {
+  document.getElementById('modalTitulo').textContent = '➕ Nova Dívida';
+  document.getElementById('editingId').value = '';
+  document.getElementById('btnAdicionar').textContent = '➕ Adicionar Dívida';
+  document.getElementById('btnCancelarEdicao').style.display = 'none';
+  limparFormulario();
+  document.getElementById('modalDivida').classList.add('aberto');
+}
+
+// Fechar modal
+function fecharModalDivida() {
+  document.getElementById('modalDivida').classList.remove('aberto');
+  cancelarEdicao();
+}
+
+// Fechar modal ao clicar no overlay (fora do conteúdo)
+function fecharModalSeClicarFora(event) {
+  if (event.target.id === 'modalDivida') {
+    fecharModalDivida();
+  }
+}
+
+// Função para iniciar edição de uma dívida (abre no modal)
+function editarDivida(id) {
+  const divida = dividas.find(d => d.id === id);
+  if (!divida) {
+    alert('Dívida não encontrada para edição.');
+    return;
+  }
+
+  document.getElementById('modalTitulo').textContent = '✎ Editar Dívida';
+  document.getElementById('nomeDivida').value = divida.nome || '';
+  document.getElementById('valorObtido').value = Number(divida.valorObtido) || '';
+  document.getElementById('quantidadeParcelas').value = divida.quantidadeParcelas || '';
+  document.getElementById('valorMensal').value = Number(divida.valorMensal) || '';
+  document.getElementById('valorTotal').value = Number(divida.valorTotal) || '';
+  document.getElementById('observacao').value = divida.observacao === 'Sem observação' ? '' : (divida.observacao || '');
+
+  document.getElementById('editingId').value = String(divida.id);
+  document.getElementById('btnAdicionar').textContent = '💾 Salvar Alterações';
+  document.getElementById('btnCancelarEdicao').style.display = 'inline-block';
+
+  calcularValorTotal();
+  document.getElementById('modalDivida').classList.add('aberto');
+}
+
+// Função para cancelar edição (só reseta o formulário; não fecha o modal aqui para evitar loop)
+function cancelarEdicao() {
+  document.getElementById('editingId').value = '';
+  limparFormulario();
+  document.getElementById('btnAdicionar').textContent = '➕ Adicionar Dívida';
+  document.getElementById('btnCancelarEdicao').style.display = 'none';
+  if (document.getElementById('modalTitulo')) {
+    document.getElementById('modalTitulo').textContent = '➕ Nova Dívida';
+  }
+}
+
+// Fechar modal com tecla Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && document.getElementById('modalDivida').classList.contains('aberto')) {
+    fecharModalDivida();
+  }
+});
+
+// Inicializar a aplicação
+document.addEventListener('DOMContentLoaded', function() {
+  atualizarLista();
+  atualizarTotais();
+});
+
+// Cálculo automático do valor total (parcelas * valor mensal)
+function calcularValorTotal() {
+  const parcelas = Number(document.getElementById('quantidadeParcelas').value) || 0;
+  const valorMensal = Number(document.getElementById('valorMensal').value) || 0;
+  const total = parcelas * valorMensal;
+  const input = document.getElementById('valorTotal');
+  if (input) {
+    input.value = total ? total.toFixed(2) : '';
+  }
+}
+
+document.getElementById('quantidadeParcelas').addEventListener('input', calcularValorTotal);
+document.getElementById('valorMensal').addEventListener('input', calcularValorTotal);
+// Atualizar lista quando o usuário alterar filtros/ordenação
+if (document.getElementById('filtroStatus')) {
+  document.getElementById('filtroStatus').addEventListener('change', atualizarLista);
+}
+if (document.getElementById('ordenarPor')) {
+  document.getElementById('ordenarPor').addEventListener('change', atualizarLista);
+}
+</script>
+</body>
+</html>

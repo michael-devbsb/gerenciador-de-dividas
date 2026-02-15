@@ -4,244 +4,416 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro de Dívidas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
+  :root {
+    --papel: #f4f1ea;
+    --grafite: #2d2a26;
+    --sepia: #5c5346;
+    --sepia-claro: #8a7f70;
+    --sangue: #8b2635;
+    --sangue-hover: #6d1e29;
+    --caneta-azul: #1e3a5f;
+    --caneta-azul-hover: #152a47;
+    --tinta-fraca: #6b6258;
+  }
+
+  * { box-sizing: border-box; }
+
   body {
-    font-family: Arial, sans-serif;
-    background: #0f172a;
-    color: #e5e7eb;
-    padding: 20px;
+    font-family: 'Libre Baskerville', Georgia, serif;
+    background: var(--papel);
+    color: var(--grafite);
+    padding: 2rem;
+    min-height: 100vh;
     line-height: 1.6;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Textura papel + film grain */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(45, 42, 38, 0.015) 2px,
+        rgba(45, 42, 38, 0.015) 4px
+      );
+    pointer-events: none;
+    z-index: 9998;
   }
 
   h1, h2 {
-    text-align: center;
-    color: #60a5fa;
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-weight: 700;
+    color: var(--grafite);
   }
 
-  .container {
-    max-width: 1000px;
-    margin: auto;
-    background: #1e293b;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  /* Layout brutalista: elementos espalhados */
+  .mural {
+    position: relative;
+    min-height: 100vh;
   }
 
-  .form-section {
-    background: #334155;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 30px;
+  .papel-titulo {
+    position: absolute;
+    top: 1rem;
+    left: 3%;
+    max-width: 420px;
+    padding: 1.2rem 1.8rem;
+    background: var(--papel);
+    border: 3px solid var(--grafite);
+    clip-path: polygon(0 0, 100% 0, 98% 2%, 100% 4%, 97% 100%, 2% 98%, 0 96%, 0 0);
+    transform: rotate(-0.8deg);
+    box-shadow: 4px 4px 0 var(--grafite);
   }
 
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
+  .papel-titulo h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    letter-spacing: 0.02em;
   }
 
-  .input-group {
-    display: flex;
-    flex-direction: column;
+  .papel-botao-nova {
+    position: absolute;
+    top: 5rem;
+    right: 4%;
+    transform: rotate(1.2deg);
   }
 
-  label {
-    margin-bottom: 5px;
-    color: #cbd5e1;
-    font-size: 14px;
-  }
-
-  input {
-    padding: 10px;
-    border: 1px solid #475569;
-    border-radius: 5px;
-    background: #1e293b;
-    color: #e5e7eb;
-    font-size: 14px;
-  }
-
-  input:focus {
-    outline: none;
-    border-color: #60a5fa;
-  }
-
-  button {
-    padding: 12px 25px;
-    background: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 5px;
+  .btn-nova-divida {
+    padding: 0.9rem 1.8rem;
+    background: var(--grafite);
+    color: var(--papel);
+    border: 2px solid var(--grafite);
     cursor: pointer;
-    font-weight: bold;
-    transition: background 0.3s;
-    font-size: 16px;
+    font-family: 'Libre Baskerville', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: transform 0.15s;
   }
 
-  button:hover {
-    background: #2563eb;
+  .btn-nova-divida:hover {
+    background: var(--sepia);
+    border-color: var(--sepia);
+    transform: rotate(-0.5deg) scale(1.02);
   }
 
-  .btn-adicionar {
-    width: 100%;
-    margin-top: 10px;
+  /* Resumos espalhados como post-its */
+  .resumo-total {
+    top: 12rem;
+    left: 2%;
+    margin-right: 5%;
+    padding: 1rem 1.5rem;
+    background: #e8e4d9;
+    border: 2px solid var(--grafite);
+    clip-path: polygon(0 0, 100% 0, 99% 3%, 100% 6%, 98% 100%, 1% 97%, 0 94%, 0 0);
+    transform: rotate(-1.5deg);
   }
 
-  .resumo {
-    background: #334155;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    text-align: center;
+  .resumo-pendentes {
+    top: 18rem;
+    left: 8%;
+    margin-right: 3%;
+    padding: 1rem 1.5rem;
+    background: #f5e8e8;
+    border: 2px solid var(--sangue);
+    clip-path: polygon(2% 0, 100% 0, 98% 2%, 100% 5%, 97% 100%, 0 98%, 1% 95%, 0 0);
+    transform: rotate(1deg);
   }
 
-  .resumo-valor {
-    font-size: 24px;
-    color: #10b981;
-    font-weight: bold;
+  .resumo-pagas {
+    top: 24rem;
+    left: 3%;
+    padding: 1rem 1.5rem;
+    background: #e6ecf2;
+    border: 2px solid var(--caneta-azul);
+    clip-path: polygon(0 1%, 100% 0, 98% 3%, 100% 6%, 96% 100%, 2% 98%, 0 96%, 0 0);
+    transform: rotate(-0.6deg);
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background: #334155;
-    border-radius: 8px;
-    overflow: hidden;
+  .total-label {
+    font-size: 0.85rem;
+    color: var(--sepia);
   }
 
-  th {
-    background: #475569;
-    padding: 15px;
-    text-align: left;
-    color: #e5e7eb;
-    font-weight: bold;
+  .total-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--grafite);
   }
 
-  td {
-    padding: 15px;
-    border-bottom: 1px solid #475569;
+  .resumo-pendentes .total-value { color: var(--sangue); }
+  .resumo-pagas .total-value { color: var(--caneta-azul); }
+
+  /* Filtros como papel recortado */
+  .papel-filtros {
+    top: 12rem;
+    right: 2%;
+    padding: 1rem 1.4rem;
+    background: #e8e4d9;
+    border: 2px solid var(--grafite);
+    clip-path: polygon(1% 0, 100% 0, 98% 2%, 100% 5%, 97% 100%, 2% 98%, 0 95%, 0 0);
+    rotate: -1.1deg;
   }
 
-  tr:hover {
-    background: #475569;
+  .papel-filtros label {
+    font-size: 0.8rem;
+    color: var(--sepia);
+    display: block;
+    margin-bottom: 0.3rem;
   }
 
-  .status-pendente {
-    color: #fbbf24;
-    font-weight: bold;
+  select {
+    padding: 0.5rem 0.8rem;
+    border: 2px solid var(--grafite);
+    background: var(--papel);
+    color: var(--grafite);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
   }
 
-  .status-pago {
-    color: #10b981;
-    font-weight: bold;
+  .filtros-grid { display: flex; flex-direction: column; gap: 0.8rem; }
+
+  /* Backup */
+  .papel-backup {
+    position: absolute;
+    margin-top: 4rem;
+    margin-right: 5%;
+    padding: 1.5rem 2rem;
+    max-width: 380px;
+    right: 0;
+    background: #e8e4d9;
+    border: 2px solid var(--grafite);
+    clip-path: polygon(1% 0, 100% 0, 98% 2%, 100% 5%, 97% 100%, 2% 98%, 0 95%, 0 0);
+    transform: rotate(-1deg);
   }
 
-  .acoes {
-    display: flex;
-    gap: 10px;
+  .papel-backup h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
   }
 
-  .btn-acao {
-    padding: 6px 12px;
-    font-size: 14px;
-  }
-
-  .btn-pagar {
-    background: #10b981;
-  }
-
-  .btn-pagar:hover {
-    background: #059669;
-  }
-
-  .btn-editar {
-    background: #f59e0b;
-  }
-
-  .btn-editar:hover {
-    background: #d97706;
-  }
-
-  .btn-excluir {
-    background: #ef4444;
-  }
-
-  .btn-excluir:hover {
-    background: #dc2626;
-  }
-
-  .backup-section {
-    background: #334155;
-    padding: 20px;
-    border-radius: 8px;
-    margin-top: 30px;
-    text-align: center;
+  .papel-backup p {
+    font-size: 0.9rem;
+    color: var(--sepia);
+    margin-bottom: 1rem;
   }
 
   .backup-buttons {
     display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-top: 15px;
+    gap: 0.8rem;
     flex-wrap: wrap;
   }
 
-  #importFile {
-    display: none;
+  .export-btn, .import-btn {
+    padding: 0.6rem 1.2rem;
+    border: 2px solid var(--grafite);
+    background: var(--papel);
+    color: var(--grafite);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    cursor: pointer;
   }
 
-  .import-btn {
-    background: #8b5cf6;
+  .export-btn:hover, .import-btn:hover {
+    background: var(--grafite);
+    color: var(--papel);
   }
 
-  .import-btn:hover {
-    background: #7c3aed;
+  #importFile { display: none; }
+
+  .container-resumos {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    left: 5%;
+    right: 0;
+    top: 20%;
+    padding: 1rem 1.4rem;
   }
 
-  .export-btn {
-    background: #3b82f6;
-  }
-
-  .export-btn:hover {
-    background: #2563eb;
-  }
-
-  .total-section {
+  .container-acoes {
+    position: absolute;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
-    padding: 15px;
-    background: #475569;
-    border-radius: 8px;
+    left: 0;
+    right: 0;
+    bottom: 20%;
+    padding: 1rem 1.4rem;
+    background: #e8e4d9;
+    border: 2px solid var(--grafite);
+    clip-path: polygon(1% 0%, 50% 0, 100% 2%, 100% 10%, 100% 100%, 0% 98%, 0 95%, 0 0);
+    transform: rotate(1.1deg);
   }
 
-  .total-label {
-    font-size: 18px;
+  /* Mural de post-its (dívidas) */
+  .mural-dividas {
+    position: absolute;
+    top: 35rem;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin-top: 5rem;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 2fr));
+    gap: 2rem;
+    align-items: start;
   }
 
-  .total-value {
-    font-size: 28px;
-    color: #10b981;
-    font-weight: bold;
+  .postit {
+    padding: 1.8rem 1.4rem;
+    border: 2px solid var(--grafite);
+    position: relative;
+    min-height: 180px;
+    transition: transform 0.2s;
+    margin: 2.5rem 0rem;
+  }
+
+  .postit:hover { transform: rotate(0deg) translateY(-2px); }
+
+  .postit-pendente {
+    background: #fdf0f0;
+    clip-path: polygon(0 0, 100% 0, 98% 2%, 100% 5%, 96% 100%, 2% 98%, 0 96%, 1% 2%);
+    transform: rotate(var(--r, -1deg));
+  }
+
+  .postit-pago {
+    background: #eef4fa;
+    clip-path: polygon(2% 0, 100% 0, 97% 3%, 100% 6%, 98% 100%, 0 97%, 1% 94%, 0 0);
+    transform: rotate(var(--r, 1.2deg));
+  }
+
+  .postit-nome {
+    font-family: 'Libre Baskerville', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--grafite);
+    margin-bottom: 0.6rem;
+    border-bottom: 1px solid rgba(45,42,38,0.2);
+    padding-bottom: 0.4rem;
+  }
+
+  .postit-dados {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--sepia);
+    line-height: 1.7;
+  }
+
+  .postit-status {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    margin: 0.5rem 0 0.8rem;
+  }
+
+  .postit-status.pendente { color: var(--sangue); }
+  .postit-status.pago { color: var(--caneta-azul); }
+
+  .postit-obs {
+    font-size: 0.75rem;
+    color: var(--sepia-claro);
+    font-style: italic;
+  }
+
+  .postit-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(45,42,38,0.15);
+  }
+
+  .btn-acao {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    border: 2px solid;
+    cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .btn-pagar {
+    background: var(--caneta-azul);
+    color: var(--papel);
+    border-color: var(--caneta-azul);
+  }
+
+  .btn-pagar:hover {
+    background: var(--caneta-azul-hover);
+    border-color: var(--caneta-azul-hover);
+  }
+
+  .btn-pago-disabled {
+    background: var(--tinta-fraca);
+    color: var(--papel);
+    border-color: var(--tinta-fraca);
+    cursor: default;
+  }
+
+  .btn-editar {
+    background: var(--sepia);
+    color: var(--papel);
+    border-color: var(--sepia);
+  }
+
+  .btn-editar:hover {
+    background: var(--grafite);
+    border-color: var(--grafite);
+  }
+
+  .btn-excluir {
+    background: var(--sangue);
+    color: var(--papel);
+    border-color: var(--sangue);
+  }
+
+  .btn-excluir:hover {
+    background: var(--sangue-hover);
+    border-color: var(--sangue-hover);
+  }
+
+  /* Vazio */
+  .mural-vazio {
+    grid-column: 1 / -1;
+    padding: 3rem;
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--sepia-claro);
+    background: #e8e4d9;
+    border: 2px dashed var(--sepia-claro);
   }
 
   /* Modal */
   .modal-overlay {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
+    inset: 0;
+    background: rgba(45, 42, 38, 0.5);
+    z-index: 2000;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    box-sizing: border-box;
+    padding: 2rem;
   }
 
   .modal-overlay.aberto {
@@ -250,116 +422,186 @@
   }
 
   .modal {
-    background: #1e293b;
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    max-width: 560px;
+    background: var(--papel);
+    border: 3px solid var(--grafite);
+    max-width: 520px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
-    position: relative;
+    clip-path: polygon(0 0, 100% 0, 98% 2%, 100% 5%, 96% 100%, 2% 98%, 0 96%, 0 0);
     animation: slideUp 0.25s ease;
-    border: 1px solid #475569;
   }
 
   .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 24px;
-    border-bottom: 1px solid #475569;
-    background: #334155;
-    border-radius: 12px 12px 0 0;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 2px solid var(--grafite);
   }
 
-  .modal-header h2 {
-    margin: 0;
-    font-size: 1.25rem;
-    text-align: left;
-  }
+  .modal-header h2 { margin: 0; font-size: 1.2rem; }
 
   .modal-close {
     background: transparent;
-    border: none;
-    color: #94a3b8;
-    font-size: 24px;
+    border: 2px solid var(--grafite);
+    color: var(--grafite);
+    font-size: 1.4rem;
     cursor: pointer;
-    padding: 4px 8px;
+    padding: 0.2rem 0.5rem;
     line-height: 1;
-    border-radius: 6px;
-    transition: color 0.2s, background 0.2s;
   }
 
   .modal-close:hover {
-    color: #e5e7eb;
-    background: #475569;
+    background: var(--grafite);
+    color: var(--papel);
   }
 
-  .modal-body {
-    padding: 24px;
+  .modal-body { padding: 1.5rem; }
+
+  .form-section { margin-bottom: 0; }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
 
-  .modal .form-section {
-    margin-bottom: 0;
-    background: transparent;
-    padding: 0;
+  .input-group {
+    display: flex;
+    flex-direction: column;
   }
 
-  .modal .form-grid {
-    margin-bottom: 16px;
+  .input-group.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 0.85rem;
+    color: var(--sepia);
+    margin-bottom: 0.3rem;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  input {
+    padding: 0.6rem 0.8rem;
+    border: 2px solid var(--grafite);
+    background: var(--papel);
+    color: var(--grafite);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.95rem;
   }
 
+  input:focus {
+    outline: none;
+    border-color: var(--sepia);
+  }
+
+  .modal-buttons {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1.2rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-adicionar {
+    padding: 0.7rem 1.4rem;
+    background: var(--grafite);
+    color: var(--papel);
+    border: 2px solid var(--grafite);
+    font-family: 'Libre Baskerville', serif;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .btn-adicionar:hover {
+    background: var(--sepia);
+    border-color: var(--sepia);
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  @media (max-width: 768px) {
-    .form-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .acoes {
-      flex-direction: column;
-    }
-    
-    .backup-buttons {
-      flex-direction: column;
-    }
-    
-    .total-section {
-      flex-direction: column;
-      gap: 10px;
-      text-align: center;
-    }
+  @media (max-width: 900px) {
+    .papel-titulo, .resumo-total, .resumo-pendentes, .resumo-pagas,
+    .papel-filtros, .papel-botao-nova { position: static; transform: none; }
+    .mural { display: flex; flex-direction: column; gap: 1.5rem; }
+    .mural-dividas { margin-top: 2rem; }
   }
 </style>
 </head>
 
 <body>
-<div class="container">
-  <h1>📋 Registro de Dívidas</h1>
-  
-  <div style="margin-bottom: 30px;">
-    <button class="btn-adicionar" onclick="abrirModalNovaDivida()">➕ Nova Dívida</button>
+<div class="mural">
+  <div class="papel-titulo">
+    <h1>Registro de Dívidas</h1>
   </div>
+
+  <div class="papel-backup">
+    <h2>Backup dos Dados</h2>
+    <p>Exporte ou importe seu registro</p>
+    <div class="backup-buttons">
+      <button class="export-btn" onclick="exportarDados()">Exportar</button>
+      <button class="import-btn" onclick="document.getElementById('importFile').click()">Importar</button>
+      <input type="file" id="importFile" onchange="importarDados(event)" accept=".json">
+    </div>
+  </div>
+  <div class="container-resumos">
+    <div class="resumo-total">
+      <div class="total-label">Total de Dívidas</div>
+      <div class="total-value" id="totalDividas">R$ 0,00</div>
+    </div>
+
+    <div class="resumo-pendentes">
+      <div class="total-label">Pendentes</div>
+      <div class="total-value" id="totalPendentes">R$ 0,00</div>
+    </div>
+
+    <div class="resumo-pagas">
+      <div class="total-label">Pagas</div>
+      <div class="total-value" id="totalPagas">R$ 0,00</div>
+    </div>
+  </div>
+  <div class="container-acoes">
+    <div class="papel-filtros">
+      <div class="filtros-grid">
+        <div>
+          <label for="filtroStatus">Filtrar</label>
+          <select id="filtroStatus">
+            <option value="all">Todas</option>
+            <option value="pendente">Pendentes</option>
+            <option value="pago">Pagas</option>
+          </select>
+        </div>
+        <div>
+          <label for="ordenarPor">Ordenar por</label>
+          <select id="ordenarPor">
+            <option value="data_desc">Data (recentes)</option>
+            <option value="data_asc">Data (antigas)</option>
+            <option value="valor_desc">Valor (maior)</option>
+            <option value="valor_asc">Valor (menor)</option>
+            <option value="nome_asc">Nome (A→Z)</option>
+            <option value="nome_desc">Nome (Z→A)</option>
+            <option value="status_asc">Status (Pend→Pago)</option>
+            <option value="status_desc">Status (Pago→Pend)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="papel-botao-nova">
+      <button class="btn-nova-divida" onclick="abrirModalNovaDivida()">+ Nova Dívida</button>
+    </div>
+  </div>
+</div>
+
+<div class="mural-dividas" id="listaDividas"></div>
 
   <!-- Modal do formulário -->
   <div id="modalDivida" class="modal-overlay" onclick="fecharModalSeClicarFora(event)">
     <div class="modal" onclick="event.stopPropagation()">
       <div class="modal-header">
-        <h2 id="modalTitulo">➕ Nova Dívida</h2>
+        <h2 id="modalTitulo">+ Nova Dívida</h2>
         <button type="button" class="modal-close" onclick="fecharModalDivida()" aria-label="Fechar">&times;</button>
       </div>
       <div class="modal-body">
@@ -369,105 +611,37 @@
               <label for="nomeDivida">Nome da Dívida</label>
               <input type="text" id="nomeDivida" placeholder="Ex: Empréstimo Banco X">
             </div>
-            
             <div class="input-group">
               <label for="valorObtido">Valor Obtido (R$)</label>
               <input type="number" step="0.01" id="valorObtido" placeholder="0.00">
             </div>
-            
             <div class="input-group">
-              <label for="quantidadeParcelas">Quantidade de Parcelas</label>
+              <label for="quantidadeParcelas">Parcelas</label>
               <input type="number" id="quantidadeParcelas" placeholder="0">
             </div>
-            
             <div class="input-group">
               <label for="valorMensal">Valor Mensal (R$)</label>
               <input type="number" step="0.01" id="valorMensal" placeholder="0.00">
             </div>
           </div>
-
-          <div class="input-group">
+          <div class="input-group full">
             <label for="valorTotal">Valor Total (R$)</label>
             <input type="number" step="0.01" id="valorTotal" placeholder="0.00">
           </div>
-          
-          <div class="input-group">
-            <label for="observacao">Observação (opcional)</label>
-            <input type="text" id="observacao" placeholder="Detalhes, data do empréstimo, etc...">
+          <div class="input-group full">
+            <label for="observacao">Observação</label>
+            <input type="text" id="observacao" placeholder="Detalhes, data do empréstimo...">
           </div>
           <input type="hidden" id="editingId" value="">
-          <div style="display:flex; gap:10px; margin-top:16px; flex-wrap: wrap;">
-            <button id="btnAdicionar" class="btn-adicionar" onclick="adicionarDivida()">➕ Adicionar Dívida</button>
-            <button id="btnCancelarEdicao" class="btn-adicionar" style="background:#6b7280; display:none;" onclick="fecharModalDivida()">✖ Cancelar Edição</button>
-            <button type="button" class="btn-adicionar" style="background:#64748b;" onclick="fecharModalDivida()">Fechar</button>
+          <div class="modal-buttons">
+            <button id="btnAdicionar" class="btn-adicionar" onclick="adicionarDivida()">+ Adicionar Dívida</button>
+            <button id="btnCancelarEdicao" class="btn-adicionar" style="background:#6b6258; border-color:#6b6258; display:none;" onclick="fecharModalDivida()">Cancelar</button>
+            <button type="button" class="btn-adicionar" style="background:transparent; color:var(--grafite);" onclick="fecharModalDivida()">Fechar</button>
           </div>
         </div>
       </div>
     </div>
   </div>
-
-  <div class="resumo">
-    <div class="total-section">
-      <div class="total-label">Total de Dívidas:</div>
-      <div class="total-value" id="totalDividas">R$ 0,00</div>
-    </div>
-    <div class="total-section">
-      <div class="total-label">Dívidas Pendentes:</div>
-      <div class="total-value" id="totalPendentes">R$ 0,00</div>
-    </div>
-    <div class="total-section">
-      <div class="total-label">Dívidas Pagas:</div>
-      <div class="total-value" id="totalPagas">R$ 0,00</div>
-    </div>
-  </div>
-
-  <h2>📊 Dívidas Registradas</h2>
-  <div style="display:flex; gap:12px; align-items:center; margin-top:10px; margin-bottom:10px; flex-wrap:wrap;">
-    <label style="font-size:14px; color:#cbd5e1;">Filtrar:</label>
-    <select id="filtroStatus" style="padding:8px; border-radius:6px; background:#1e293b; color:#e5e7eb; border:1px solid #475569;">
-      <option value="all">Todas</option>
-      <option value="pendente">Pendentes</option>
-      <option value="pago">Pagas</option>
-    </select>
-
-    <label style="font-size:14px; color:#cbd5e1;">Ordenar por:</label>
-    <select id="ordenarPor" style="padding:8px; border-radius:6px; background:#1e293b; color:#e5e7eb; border:1px solid #475569;">
-      <option value="data_desc">Data (mais recentes)</option>
-      <option value="data_asc">Data (mais antigas)</option>
-      <option value="valor_desc">Valor (maior → menor)</option>
-      <option value="valor_asc">Valor (menor → maior)</option>
-      <option value="nome_asc">Nome (A → Z)</option>
-      <option value="nome_desc">Nome (Z → A)</option>
-      <option value="status_asc">Status (Pendente → Pago)</option>
-      <option value="status_desc">Status (Pago → Pendente)</option>
-    </select>
-  </div>
-  <table>
-    <thead>
-      <tr>
-        <th>Nome</th>
-        <th>Valor Obtido</th>
-        <th>Parcelas</th>
-        <th>Valor Mensal</th>
-        <th>Valor Total</th>
-        <th>Status</th>
-        <th>Observação</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody id="listaDividas"></tbody>
-  </table>
-
-  <div class="backup-section">
-    <h2>💾 Backup dos Dados</h2>
-    <p>Exporte ou importe seu registro de dívidas</p>
-    <div class="backup-buttons">
-      <button class="export-btn" onclick="exportarDados()">📥 Exportar Dados</button>
-      <button class="import-btn" onclick="document.getElementById('importFile').click()">📤 Importar Dados</button>
-      <input type="file" id="importFile" onchange="importarDados(event)" accept=".json">
-    </div>
-  </div>
-</div>
 
 <script>
 // Carregar dívidas do localStorage ou iniciar array vazio
@@ -548,7 +722,7 @@ function adicionarDivida() {
       atualizarTotais();
       limparFormulario();
       document.getElementById('editingId').value = '';
-      document.getElementById('btnAdicionar').textContent = '➕ Adicionar Dívida';
+      document.getElementById('btnAdicionar').textContent = '+ Adicionar Dívida';
       document.getElementById('btnCancelarEdicao').style.display = 'none';
       fecharModalDivida();
       alert('Dívida atualizada com sucesso!');
@@ -589,26 +763,21 @@ function adicionarDivida() {
   alert('Dívida registrada com sucesso!');
 }
 
-// Função para atualizar a lista na interface
+// Função para atualizar a lista na interface (post-its)
 function atualizarLista() {
-  const tbody = document.getElementById('listaDividas');
+  const container = document.getElementById('listaDividas');
 
-  // Pegar filtros/ordenacao
   const filtro = document.getElementById('filtroStatus') ? document.getElementById('filtroStatus').value : 'all';
   const ordenacao = document.getElementById('ordenarPor') ? document.getElementById('ordenarPor').value : 'data_desc';
 
-  // Copia para não alterar o array original
   let lista = dividas.slice();
 
-  // Aplicar filtro por status
   if (filtro !== 'all') {
     lista = lista.filter(d => d.status === filtro);
   }
 
-  // Função utilitária para obter valor numérico da dívida
   const obterValor = d => Number(d.valorTotal) || (Number(d.valorMensal) * Number(d.quantidadeParcelas)) || Number(d.valorObtido) || 0;
 
-  // Aplicar ordenação
   switch (ordenacao) {
     case 'data_desc':
       lista.sort((a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao));
@@ -639,43 +808,42 @@ function atualizarLista() {
   }
 
   if (lista.length === 0) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="8" style="text-align: center; padding: 30px;">
-          Nenhuma dívida encontrada com os filtros atuais.
-        </td>
-      </tr>
-    `;
+    container.innerHTML = '<div class="mural-vazio">Nenhuma dívida encontrada com os filtros atuais.</div>';
     return;
   }
 
+  const rotacoes = ['-1.2deg', '0.8deg', '-0.5deg', '1.5deg', '-1deg', '1.8deg'];
   let html = '';
-  lista.forEach(divida => {
-    const statusClass = divida.status === 'pendente' ? 'status-pendente' : 'status-pago';
+  lista.forEach((divida, i) => {
+    const r = rotacoes[i % rotacoes.length];
+    const postitClass = divida.status === 'pendente' ? 'postit postit-pendente' : 'postit postit-pago';
+    const statusClass = divida.status === 'pendente' ? 'pendente' : 'pago';
     const statusText = divida.status === 'pendente' ? 'Pendente' : 'Pago';
+    const valorObtido = `R$ ${Number(divida.valorObtido).toFixed(2).replace('.', ',')}`;
+    const valorMensal = `R$ ${Number(divida.valorMensal).toFixed(2).replace('.', ',')}`;
     const valorTotalFormatado = `R$ ${Number(divida.valorTotal || (divida.valorMensal * divida.quantidadeParcelas) || 0).toFixed(2).replace('.', ',')}`;
 
     html += `
-      <tr>
-        <td><strong>${divida.nome}</strong></td>
-        <td>R$ ${Number(divida.valorObtido).toFixed(2).replace('.', ',')}</td>
-        <td>${divida.quantidadeParcelas}x</td>
-        <td>R$ ${Number(divida.valorMensal).toFixed(2).replace('.', ',')}</td>
-        <td>${valorTotalFormatado}</td>
-        <td class="${statusClass}">${statusText}</td>
-        <td>${divida.observacao}</td>
-        <td class="acoes">
-          ${divida.status === 'pendente' 
-            ? `<button class="btn-acao btn-pagar" onclick="marcarComoPago(${divida.id})">✓ Pagar</button>` 
-            : `<button class="btn-acao" style="background: #6b7280;" disabled>Pago</button>`}
-          <button class="btn-acao btn-editar" onclick="editarDivida(${divida.id})">✎ Editar</button>
-          <button class="btn-acao btn-excluir" onclick="excluirDivida(${divida.id})">🗑️ Excluir</button>
-        </td>
-      </tr>
+      <div class="${postitClass}" style="--r: ${r}">
+        <div class="postit-nome">${divida.nome}</div>
+        <div class="postit-dados">
+          Obtido: ${valorObtido} | ${divida.quantidadeParcelas}x de ${valorMensal}<br>
+          Total: ${valorTotalFormatado}
+        </div>
+        <div class="postit-status ${statusClass}">${statusText}</div>
+        ${divida.observacao && divida.observacao !== 'Sem observação' ? `<div class="postit-obs">${divida.observacao}</div>` : ''}
+        <div class="postit-acoes">
+          ${divida.status === 'pendente'
+            ? `<button class="btn-acao btn-pagar" onclick="marcarComoPago(${divida.id})">Pagar</button>`
+            : `<button class="btn-acao btn-pago-disabled" disabled>Pago</button>`}
+          <button class="btn-acao btn-editar" onclick="editarDivida(${divida.id})">Editar</button>
+          <button class="btn-acao btn-excluir" onclick="excluirDivida(${divida.id})">Excluir</button>
+        </div>
+      </div>
     `;
   });
 
-  tbody.innerHTML = html;
+  container.innerHTML = html;
 }
 
 // Função para marcar dívida como paga
@@ -785,9 +953,9 @@ function limparFormulario() {
 
 // Função para abrir modal (nova dívida)
 function abrirModalNovaDivida() {
-  document.getElementById('modalTitulo').textContent = '➕ Nova Dívida';
+  document.getElementById('modalTitulo').textContent = '+ Nova Dívida';
   document.getElementById('editingId').value = '';
-  document.getElementById('btnAdicionar').textContent = '➕ Adicionar Dívida';
+  document.getElementById('btnAdicionar').textContent = '+ Adicionar Dívida';
   document.getElementById('btnCancelarEdicao').style.display = 'none';
   limparFormulario();
   document.getElementById('modalDivida').classList.add('aberto');
@@ -814,7 +982,7 @@ function editarDivida(id) {
     return;
   }
 
-  document.getElementById('modalTitulo').textContent = '✎ Editar Dívida';
+  document.getElementById('modalTitulo').textContent = 'Editar Dívida';
   document.getElementById('nomeDivida').value = divida.nome || '';
   document.getElementById('valorObtido').value = Number(divida.valorObtido) || '';
   document.getElementById('quantidadeParcelas').value = divida.quantidadeParcelas || '';
@@ -823,7 +991,7 @@ function editarDivida(id) {
   document.getElementById('observacao').value = divida.observacao === 'Sem observação' ? '' : (divida.observacao || '');
 
   document.getElementById('editingId').value = String(divida.id);
-  document.getElementById('btnAdicionar').textContent = '💾 Salvar Alterações';
+  document.getElementById('btnAdicionar').textContent = 'Salvar Alterações';
   document.getElementById('btnCancelarEdicao').style.display = 'inline-block';
 
   calcularValorTotal();
@@ -834,10 +1002,10 @@ function editarDivida(id) {
 function cancelarEdicao() {
   document.getElementById('editingId').value = '';
   limparFormulario();
-  document.getElementById('btnAdicionar').textContent = '➕ Adicionar Dívida';
+  document.getElementById('btnAdicionar').textContent = '+ Adicionar Dívida';
   document.getElementById('btnCancelarEdicao').style.display = 'none';
   if (document.getElementById('modalTitulo')) {
-    document.getElementById('modalTitulo').textContent = '➕ Nova Dívida';
+    document.getElementById('modalTitulo').textContent = '+ Nova Dívida';
   }
 }
 

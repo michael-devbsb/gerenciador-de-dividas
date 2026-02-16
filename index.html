@@ -121,7 +121,7 @@
     padding: 1rem 1.5rem;
     background: #e8e4d9;
     border: 2px solid var(--grafite);
-    clip-path: polygon(0 0, 100% 0, 99% 3%, 100% 6%, 98% 100%, 1% 97%, 0 94%, 0 0);
+    clip-path: polygon(0 2%, 98% 0, 100% 4%, 99% 100%, 3% 98%, 0 95%, 0 0);
     transform: rotate(-1.5deg);
   }
 
@@ -132,7 +132,7 @@
     padding: 1rem 1.5rem;
     background: #f5e8e8;
     border: 2px solid var(--sangue);
-    clip-path: polygon(2% 0, 100% 0, 98% 2%, 100% 5%, 97% 100%, 0 98%, 1% 95%, 0 0);
+    clip-path: polygon(0 4%, 98% 0, 100% 5%, 96% 100%, 2% 97%, 0 92%);
     transform: rotate(1deg);
   }
 
@@ -142,7 +142,7 @@
     padding: 1rem 1.5rem;
     background: #e6ecf2;
     border: 2px solid var(--caneta-azul);
-    clip-path: polygon(0 1%, 100% 0, 98% 3%, 100% 6%, 96% 100%, 2% 98%, 0 96%, 0 0);
+    clip-path: polygon(2% 0, 100% 2%, 98% 100%, 0 98%, 0 5%);
     transform: rotate(-0.6deg);
   }
 
@@ -195,7 +195,7 @@
     right: 0;
     margin-top: 1rem;
     padding: 1.5rem;
-    max-width: 380px;
+    width: 350px;
     max-height: 180px;
     background: #e8e4d9;
     border: 2px solid var(--grafite);
@@ -279,7 +279,7 @@
     position: relative;
     min-height: 180px;
     transition: transform 0.2s;
-    margin: 2.5rem 0rem;
+    margin-top: 1rem;
   }
 
   .postit:hover { transform: rotate(0deg) translateY(-2px); }
@@ -516,9 +516,16 @@
 
   @media (max-width: 900px) {
     .papel-titulo, .resumo-total, .resumo-pendentes, .resumo-pagas,
-    .papel-filtros, .papel-botao-nova { position: static; transform: none; }
+    .papel-filtros, .papel-botao-nova { 
+      position: static; transform: none; 
+    }
     .mural, .container-header, .container-acoes, .container-resumos { display: flex; flex-direction: column; gap: 1.5rem; }
-    .mural-dividas { margin-top: 2rem; }
+    .mural-dividas { 
+      margin-top: 2rem; 
+    }
+    .papel-backup{
+      width: 100%;
+    }
   }
 </style>
 </head>

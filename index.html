@@ -70,7 +70,6 @@
   /* Layout brutalista: elementos espalhados */
   .mural {
     position: relative;
-    min-height: 100vh;
   }
 
   .papel-titulo {
@@ -91,7 +90,6 @@
   }
 
   .papel-botao-nova {
-    position: absolute;
     top: 5rem;
     right: 4%;
     transform: rotate(1.2deg);
@@ -194,8 +192,9 @@
 
   /* Backup */
   .papel-backup {
+    right: 0;
     margin-top: 1rem;
-    padding: 1.5rem 2rem;
+    padding: 1.5rem;
     max-width: 380px;
     max-height: 180px;
     background: #e8e4d9;
@@ -243,27 +242,19 @@
     justify-content: space-around;
     align-items: center;
     padding: 1rem 2rem;
-    max-height: 220px;
   }
 
   .container-resumos {
-    position: absolute;
     display: flex;
     justify-content: center;
-    left: 0;
-    right: 0;
-    top: 30%;
     padding: 1rem 2rem;
   }
 
   .container-acoes {
-    position: absolute;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    left: 0;
-    right: 0;
-    bottom: 20%;
+    margin-top: 30px;
     padding: 1rem 1.4rem;
     background: #e8e4d9;
     border: 2px solid var(--grafite);
@@ -272,12 +263,9 @@
 
   /* Mural de post-its (dívidas) */
   .mural-dividas {
-    position: absolute;
-    top: 32rem;
     left: 0;
     right: 0;
     bottom: 0;
-    margin-top: 5rem;
     padding: 2rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 2fr));
@@ -529,7 +517,7 @@
   @media (max-width: 900px) {
     .papel-titulo, .resumo-total, .resumo-pendentes, .resumo-pagas,
     .papel-filtros, .papel-botao-nova { position: static; transform: none; }
-    .mural { display: flex; flex-direction: column; gap: 1.5rem; }
+    .mural, .container-header, .container-acoes, .container-resumos { display: flex; flex-direction: column; gap: 1.5rem; }
     .mural-dividas { margin-top: 2rem; }
   }
 </style>
